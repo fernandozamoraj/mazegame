@@ -1,0 +1,329 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<!--http://www.aharrisbooks.net/h5g/h5g_5/tplt.html-->
+<head>
+    <meta charset="UTF-8">
+    <title>template for simple games</title>
+    <script type="text/javascript"
+            src = "./js/simple_game.js"></script>
+    <script type="text/javascript">
+        var scene;        
+        var theShip;
+        var walls = [];
+        var MAX_WALLS = 10;
+        var WALL_HEIGHT = 50;
+        var levelTimer;
+        var getReadySplash;
+        var explosionSound;
+        var paused = false;
+
+        function EnhancedSprite(scene, fileName, width, height){
+
+            var enhancedSprite = new Sprite(scene, fileName, width, height);
+            var paused = false;
+
+            enhancedSprite.pause = function(){
+                paused = true;
+            };
+
+            enhancedSprite.resume = function(){
+                paused = false;
+            };
+
+            //override update
+            enhancedSprite.realUpdate = enhancedSprite.update;
+
+            enhancedSprite.update = function(){
+
+                if(!paused){
+                    this.realUpdate();
+                }
+            }
+
+            //override collidesWith
+            enhancedSprite.collidesWith = function(sprite){
+                //check for collision with another sprite
+                
+                var divisor = 3;
+
+                //collisions only activated when both sprites are visible
+                var collision = false;
+                if (this.visible){
+                  
+                    if (sprite.visible){
+                            //define borders
+                        myLeft = this.x - (this.width / divisor);
+                        myRight = this.x + (this.width / divisor);
+                        myTop = this.y - (this.height / divisor);
+                        myBottom = this.y + (this.height / divisor);
+                        otherLeft = sprite.x - (sprite.width / divisor);
+                        otherRight = sprite.x + (sprite.width / divisor);
+                        otherTop = sprite.y - (sprite.height / divisor);
+                        otherBottom = sprite.y + (sprite.height / divisor);
+                            
+                        //assume collision
+                        collision = true;
+                        
+                        //determine non-colliding states
+                        if ((myBottom < otherTop) ||
+                                (myTop > otherBottom) ||
+                                (myRight < otherLeft) ||
+                                (myLeft > otherRight)) {
+                                  collision = false;
+                        } // end if
+
+                    } // end 'other visible' if
+                } // end 'I'm visible' if
+
+                return collision;
+            }; 
+
+            return enhancedSprite;
+        }
+
+        function GetReadySplash(scene){
+
+            var tempSplash = new Sprite(scene, "./img/getready.png", 800, 70);
+            
+            tempSplash.init = function(){
+                this.setX(this.cWidth/2 );
+                this.setY(this.cHeight/2);
+                this.setSpeed(0);
+                //this.setMoveAngle(180);
+            };
+
+            return tempSplash;        
+        }
+
+        
+
+        /******************************************************************
+         
+         Wall Class
+         Class for the wall logic 
+
+        ******************************************************************/
+        function Wall(scene){
+
+            var tempWall = new EnhancedSprite(scene, "./img/wall.png", 170, WALL_HEIGHT);
+            
+            tempWall.getWallHeight = function(){
+                return WALL_HEIGHT;
+            }; 
+
+            tempWall.init = function(){
+                
+                var MIN_WIDTH = this.cWidth/10;
+                var MAX_WIDTH = this.cWidth/10;
+
+                var width = Math.random() * (MAX_WIDTH - MIN_WIDTH) + MIN_WIDTH; 
+                var xPosition = Math.random() * this.cWidth + width/2;
+                this.width = width;
+                this.setX(xPosition);
+                this.setSpeed(10);
+                this.setMoveAngle(180);
+            };
+
+            tempWall.repositionOnBoundsCheck = function(){
+
+
+                var MIN_WIDTH = this.cWidth/10;
+                var MAX_WIDTH = this.cWidth/4;
+                var width = Math.random() * (MAX_WIDTH - MIN_WIDTH) + MIN_WIDTH; 
+                var xPosition = Math.random() * this.cWidth + width/2;
+
+                if(this.y < 10){
+
+                    this.width = width;
+                    this.setX( xPosition );
+                }
+            };
+
+
+
+            return tempWall;
+
+        }
+
+        /******************************************************************
+         
+         SpaceShip Class
+         Class for the spaceship logic 
+
+        ******************************************************************/
+        function SpaceShip(scene){
+
+            var tempSpaceShip = new EnhancedSprite(scene, "./img/space_ship.png", 70, 70);
+            var START_Y_POSITON  = 500;
+            var MIN_SPEED = 4;
+            var previousKeyLeft = false;
+            var previousKeyRight = false;
+
+            tempSpaceShip.init = function(){
+
+                tempSpaceShip.changeImgAngleBy(180);
+                tempSpaceShip.setSpeed(MIN_SPEED);
+                tempSpaceShip.setY(START_Y_POSITON);
+            };
+
+            tempSpaceShip.checkKeys = function(){
+
+                if(keysDown[K_LEFT])
+                {
+                    //handle events here
+                    //sprite1.changeImgAngleBy(-5);
+                    this.setMoveAngle(270);
+                    this.setImgAngle(230);
+
+                    //reset the speed whenever direction changed
+                    if(previousKeyRight)
+                        this.setSpeed(MIN_SPEED);
+
+                    this.changeSpeedBy(1);
+
+                    previousKeyLeft = true;
+                    previousKeyRight = false;
+                }
+
+                if(keysDown[K_RIGHT]){
+                    //handle events here
+                    //sprite1.changeImgAngleBy(5);
+                    this.setMoveAngle(90);
+                    this.setImgAngle(320);
+                    
+                    //reset the speed whenever the direction changes
+                    if(previousKeyLeft)
+                        this.setSpeed(MIN_SPEED);
+
+                    this.changeSpeedBy(1);
+
+                    previousKeyLeft = false;
+                    previousKeyRight = true;
+
+                }
+            };
+
+            return tempSpaceShip;
+        }
+
+        function initWalls(scene){
+              
+            var yPosition = 0;              
+            var i = 0;
+
+            for(i =0; i < MAX_WALLS; i++){
+
+                walls[i] = new Wall(scene);
+
+                
+                walls[i].init();
+
+                walls[i].setY(yPosition);
+                yPosition += (WALL_HEIGHT*2);
+            }
+        }
+
+        function resetWalls(){
+              
+            var yPosition = 0;              
+            var i = 0;
+
+            for(i =0; i < MAX_WALLS; i++){
+
+                walls[i].setY(yPosition);
+                yPosition += WALL_HEIGHT;
+            }
+        }
+
+        function checkWallsForBounds(){
+            var i = 0;
+
+            for(i =0; i < MAX_WALLS; i++){
+                walls[i].repositionOnBoundsCheck();
+            }
+
+        }
+
+        function updateWalls(){
+            var i = 0;
+
+            for(i =0; i < MAX_WALLS; i++){
+                walls[i].update();
+            }
+
+        }
+
+        function resetLevel(){
+            levelTimer.reset();
+        }
+        
+        function init(){
+            scene = new Scene();
+            scene.setBG("black");
+
+            explosionSound = new Sound("./sound/explosion.ogg");
+            getReadySplash = new GetReadySplash(scene);
+            theShip = new SpaceShip(scene);
+
+            levelTimer = new Timer();            
+
+            scene.start();  
+            getReadySplash.init();
+            theShip.init();    
+
+            initWalls(scene);  
+
+        } // end init
+        
+        function checkforCollisions(){
+
+            var i = 0; 
+            for(i = 0 ; i < MAX_WALLS; i++){
+
+                if(walls[i].collidesWith(theShip)){
+                    playCrashSound();
+                    resetWalls();
+                    //TODO: start crash scene
+                    levelTimer.reset();
+                }
+            }
+        }
+
+        function update(){
+            scene.clear();    
+
+            //explosionSound.showControls();
+
+            if(inPlay()){
+                theShip.checkKeys();
+                checkWallsForBounds();
+
+                //update all the sprites
+                theShip.update();
+
+                checkforCollisions();
+
+                updateWalls();
+
+            }
+            else{
+                getReadySplash.update();
+            }
+        }
+        
+
+        function playCrashSound(){
+             explosionSound.play();
+        }
+
+        function inPlay(){
+
+            var timeElapsed = levelTimer.getTimeElapsed();
+            return timeElapsed > 2;
+        }
+    </script>
+</head>
+<body onload = "init()">
+    
+</body>
+</html>
