@@ -155,7 +155,7 @@
 
             var tempSpaceShip = new EnhancedSprite(scene, "./img/space_ship.png", 70, 70);
             var START_Y_POSITON  = 500;
-            var MIN_SPEED = 4;
+            var MIN_SPEED = 2;
             var previousKeyLeft = false;
             var previousKeyRight = false;
 
@@ -199,6 +199,30 @@
 
                     previousKeyLeft = false;
                     previousKeyRight = true;
+
+                }
+
+                if(keysDown[K_UP]){
+                    //handle events here
+                    //sprite1.changeImgAngleBy(5);
+                    this.setMoveAngle(0);
+                    
+                    this.setSpeed(MIN_SPEED*2);
+
+                    previousKeyLeft = false;
+                    previousKeyRight = false;
+
+                }
+
+                if(keysDown[K_DOWN]){
+                    //handle events here
+                    //sprite1.changeImgAngleBy(5);
+                    this.setMoveAngle(180);
+                    
+                    this.setSpeed(MIN_SPEED*4);
+
+                    previousKeyLeft = false;
+                    previousKeyRight = false;
 
                 }
             };
