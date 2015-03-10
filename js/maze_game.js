@@ -56,11 +56,14 @@
 
             tempWall.init = function(){
                 
-                var MIN_WIDTH = this.cWidth/10;
-                var MAX_WIDTH = this.cWidth/10;
+                var MIN_WIDTH = this.cWidth/20;
+                var MAX_WIDTH = this.cWidth/15;
 
                 var width = Math.random() * (MAX_WIDTH - MIN_WIDTH) + MIN_WIDTH; 
                 var xPosition = Math.random() * this.cWidth + width/2;
+
+                //allows sprite to go off screen
+                this.setBoundAction(CONTINUE);
                 this.width = width;
                 this.setX(xPosition);
                 this.setSpeed(10);
@@ -69,16 +72,16 @@
 
             tempWall.repositionOnBoundsCheck = function(){
 
-
                 var MIN_WIDTH = this.cWidth/10;
                 var MAX_WIDTH = this.cWidth/4;
                 var width = Math.random() * (MAX_WIDTH - MIN_WIDTH) + MIN_WIDTH; 
                 var xPosition = Math.random() * this.cWidth + width/2;
 
-                if(this.y < 10){
+                if(this.y > 600){
 
                     this.width = width;
                     this.setX( xPosition );
+                    this.setY(-600);
                 }
             };
 

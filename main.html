@@ -17,42 +17,41 @@
         var theShip;
         var theBackground;
         var walls = [];
-        var MAX_WALLS = 5;
+        var MAX_WALLS = 24; //must be divisible by 3
         var WALL_HEIGHT = 50;
         var levelTimer;
         var getReadySplash;
         var explosionSound;
         var paused = false;
+        var WALL_START_POSITION = -1200; //start off screen
 
         //TODO: Extract the Walls class out
         //there  is a lot of logic there that should be grouped together
 
         function initWalls(scene){
               
-            var yPosition = 0;              
-            var i = 0;
-
-            for(i =0; i < MAX_WALLS; i++){
+            for(i=0;i<MAX_WALLS;i++){
 
                 walls[i] = new Wall(scene);
-
-                
                 walls[i].init();
-
-                walls[i].setY(yPosition);
-                yPosition += (WALL_HEIGHT*2);
             }
+                 
+            resetWalls();
         }
 
         function resetWalls(){
               
-            var yPosition = 0;              
+            var yPosition = WALL_START_POSITION;              
             var i = 0;
+            var j = 0;                           
 
-            for(i =0; i < MAX_WALLS; i++){
+            for(i =0; i < MAX_WALLS; ){
+                for(j=0;j<3;j++){                  
+                    walls[i].setY(yPosition);
+                    i++;
+                }
 
-                walls[i].setY(yPosition);
-                yPosition += WALL_HEIGHT;
+                yPosition += (WALL_HEIGHT*3);
             }
         }
 
