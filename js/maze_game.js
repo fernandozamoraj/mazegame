@@ -48,7 +48,7 @@
         ******************************************************************/
         function Wall(scene){
 
-            var tempWall = new EnhancedSprite(scene, "./img/wall.png", 170, WALL_HEIGHT);
+            var tempWall = new EnhancedSprite(scene, "./img/meteor.png", 170, WALL_HEIGHT);
             
             tempWall.getWallHeight = function(){
                 return WALL_HEIGHT;
@@ -66,7 +66,7 @@
                 this.setBoundAction(CONTINUE);
                 this.width = width;
                 this.setX(xPosition);
-                this.setSpeed(10);
+                this.setSpeed(6);
                 this.setMoveAngle(180);
             };
 
@@ -96,15 +96,15 @@
         ******************************************************************/
         function SpaceShip(scene){
 
-            var tempSpaceShip = new EnhancedSprite(scene, "./img/space_ship.png", 70, 70);
+            var tempSpaceShip = new EnhancedSprite(scene, "./img/ship.png", 70, 70);
             var START_Y_POSITON  = 500;
-            var MIN_SPEED = 2;
+            var MIN_SPEED = 1;
             var previousKeyLeft = false;
             var previousKeyRight = false;
 
             tempSpaceShip.init = function(){
 
-                tempSpaceShip.changeImgAngleBy(180);
+                tempSpaceShip.changeImgAngleBy(0);
                 tempSpaceShip.setSpeed(MIN_SPEED);
                 tempSpaceShip.setY(START_Y_POSITON);
             };
