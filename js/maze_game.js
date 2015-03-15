@@ -6,7 +6,7 @@
         ******************************************************************/
         function GetReadySplash(scene){
 
-            var tempSplash = new Sprite(scene, "./img/getready.png", 800, 70);
+            var tempSplash = new Sprite(scene, "./img/getready.png", 500, 200);
             
             tempSplash.init = function(){
                 this.setX(this.cWidth/2 );
@@ -26,7 +26,7 @@
         ******************************************************************/
        function Background(scene){
 
-            var sprite = new EnhancedSprite(scene, "./img/background_black.png", 800, 70);
+            var sprite = new EnhancedSprite(scene, "./img/notepad.png", 800, 600);
             
             sprite.init = function(){
                 this.setX(this.cWidth/2 );
@@ -96,7 +96,7 @@
         ******************************************************************/
         function SpaceShip(scene){
 
-            var tempSpaceShip = new EnhancedSprite(scene, "./img/ship.png", 70, 70);
+            var tempSpaceShip = new EnhancedSprite(scene, "./img/ship.png", 50, 50);
             var START_Y_POSITON  = 500;
             var MIN_SPEED = 1;
             var previousKeyLeft = false;
@@ -104,15 +104,48 @@
 
             tempSpaceShip.init = function(){
 
-                tempSpaceShip.changeImgAngleBy(0);
-                tempSpaceShip.setSpeed(MIN_SPEED);
-                tempSpaceShip.setY(START_Y_POSITON);
+                this.setBoundAction(CONTINUE);
+                this.changeImgAngleBy(0);
+                this.setSpeed(MIN_SPEED);
+                this.setY(START_Y_POSITON);
+            };
+
+
+            //overrides the checkBounds
+            //keep shit within screen bounds
+            tempSpaceShip.checkBounds = function(){
+                var leftBound = 10 + this.width/2;
+                var rightBound = this.cWidth - (this.width/2 + 10);
+                var topBound = 200;
+                var bottomBound = this.cHeight - (this.height/2 + 10);
+
+
+                if(this.y < topBound)
+                    this.y = topBound;
+                if(this.y > bottomBound){
+                    this.y = bottomBound;
+                    this.dy = 0; //affected by gravity
+                }
+
+                if(this.x < leftBound)
+                    this.x = leftBound;
+                if(this.x > rightBound)
+                    this.x = rightBound;
+            };
+
+            tempSpaceShip.checkGravity = function(){
+
+                this.addVector(180,.3);
             };
 
             tempSpaceShip.checkKeys = function(){
 
                 if(keysDown[K_LEFT])
                 {
+
+                    this.addVector(270,.5);
+
+                    /*
                     //handle events here
                     //sprite1.changeImgAngleBy(-5);
                     this.setMoveAngle(270);
@@ -126,9 +159,14 @@
 
                     previousKeyLeft = true;
                     previousKeyRight = false;
+                    */
                 }
 
                 if(keysDown[K_RIGHT]){
+
+
+                    this.addVector(90,.5);
+                    /*
                     //handle events here
                     //sprite1.changeImgAngleBy(5);
                     this.setMoveAngle(90);
@@ -142,15 +180,18 @@
 
                     previousKeyLeft = false;
                     previousKeyRight = true;
+                    */
 
                 }
 
                 if(keysDown[K_UP]){
                     //handle events here
                     //sprite1.changeImgAngleBy(5);
-                    this.setMoveAngle(0);
+                    //this.setMoveAngle(0);
                     
-                    this.setSpeed(MIN_SPEED*6);
+                    //this.setSpeed(MIN_SPEED*6);
+
+                    this.addVector(0, 2);
 
                     previousKeyLeft = false;
                     previousKeyRight = false;

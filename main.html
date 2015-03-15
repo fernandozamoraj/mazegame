@@ -24,6 +24,7 @@
         var explosionSound;
         var paused = false;
         var WALL_START_POSITION = -1200; //start off screen
+        var fontColor = "#9999ff";
 
         //TODO: Extract the Walls class out
         //there  is a lot of logic there that should be grouped together
@@ -118,7 +119,7 @@
             var fontSize = "30";
             var message = "Miles: " + (Math.round(levelTimer.getTimeElapsed() * 10)).toString();
 
-            theBackground.writeText(fontFamily, fontSize, "#ffffff", message, 10, 50);
+            theBackground.writeText(fontFamily, fontSize, fontColor, message, 10, 50);
         }
 
         function update(){
@@ -135,6 +136,7 @@
 
                 //update all the sprites
                 theShip.update();
+                theShip.checkGravity();
 
                 checkforCollisions();
 
@@ -166,7 +168,7 @@
             var fontSize = "100";
             var message = (4 - Math.round(levelTimer.getTimeElapsed())).toString();
 
-            theBackground.writeText(fontFamily, fontSize, "#ffffff", message, 350, 200);
+            theBackground.writeText(fontFamily, fontSize, fontColor, message, 350, 200);
         }
     </script>
 </head>
